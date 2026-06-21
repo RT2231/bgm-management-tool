@@ -10,8 +10,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'おまかせBGM',
+  description: '配信者向けBGMプレイヤー。雰囲気タグを選ぶだけで、最適なBGMをランダム再生。',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -46,7 +46,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html lang="ja" className={`${geistSans.variable} ${geistMono.variable} dark bg-background`}>
       <body className="font-sans antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

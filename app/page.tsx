@@ -1,16 +1,26 @@
+import { BgmPlayer } from "@/components/bgm-player";
+
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center font-sans">
-      <main className="flex w-full max-w-3xl flex-col items-center gap-8 px-6 py-16 text-center sm:items-start sm:text-left">
-        <div className="flex flex-col gap-4">
-          <h1 className="text-4xl font-bold tracking-tight">
-            おまかせBGM
-          </h1>
-          <p className="max-w-md text-lg text-muted-foreground">
-            To get started, send a prompt or modify this page directly.
+    <main className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-16">
+      <div className="flex w-full max-w-xl flex-col items-center gap-8">
+        {/* Brand wordmark */}
+        <header className="text-center">
+          <p className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
+            Streaming BGM for Creators
           </p>
-        </div>
-      </main>
-    </div>
+        </header>
+
+        {/* Player */}
+        <BgmPlayer />
+
+        {/* Footer note */}
+        <footer>
+          <p className="text-center text-xs text-muted-foreground">
+            Cloudflare Workers + D1 + R2 powered
+          </p>
+        </footer>
+      </div>
+    </main>
   );
 }
