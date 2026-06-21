@@ -15,7 +15,13 @@ import { TagSelector } from "@/components/tag-selector";
 import { VolumeControl } from "@/components/volume-control";
 import type { BgmTag, PlayerStatus, Track } from "@/types/bgm";
 
-const WORKERS_BASE_URL = process.env.NEXT_PUBLIC_WORKERS_URL ?? "";
+// NEXT_PUBLIC_ 変数はビルド時に埋め込まれる。
+// v0 プレビュー / ローカル開発では空になりうるので実行時にも確認する。
+const WORKERS_BASE_URL =
+  (typeof process !== "undefined" && process.env.NEXT_PUBLIC_WORKERS_URL) ||
+  (typeof window !== "undefined" &&
+    (window as unknown as Record<string, string>).__NEXT_PUBLIC_WORKERS_URL__) ||
+  "";
 
 // プログレスバーをドラッグ中の最小更新間隔（ms）
 const SEEK_THROTTLE_MS = 50;
@@ -58,6 +64,7 @@ export function BgmPlayer() {
     const onCanPlay        = () => setIsBuffering(false);
     const onPlaying        = () => { setIsBuffering(false); setStatus("playing"); };
     const onEnded          = () => {
+      autoNextRef.current = true;
       setStatus("loading");
       setIsBuffering(false);
     };
@@ -100,12 +107,15 @@ export function BgmPlayer() {
   const tagRef = useRef(tag);
   useEffect(() => { tagRef.current = tag; }, [tag]);
 
+  // 曲が自然に終わった（onEnded）ときだけ自動次曲を取得する
+  // prevIdRef が null = まだ一度も再生していない = 自動発火しない
+  const autoNextRef = useRef(false);
+
   useEffect(() => {
-    if (status === "loading" && prevIdRef.current !== null) {
-      // onEnded から status="loading" になったケース → 次の曲を取得
+    if (status === "loading" && autoNextRef.current && prevIdRef.current !== null) {
+      autoNextRef.current = false;
       fetchNextTrack(tagRef.current, prevIdRef.current);
     }
-    // fetchNextTrack は useCallback で安定しているため依存に追加しても無限ループしない
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status]);
 
@@ -121,7 +131,7 @@ export function BgmPlayer() {
     if (!WORKERS_BASE_URL) {
       setStatus("error");
       setErrorMsg(
-        "NEXT_PUBLIC_WORKERS_URL が未設定です。Vercel の環境変数に Workers の URL を設定してください。"
+        "NEXT_PUBLIC_WORKERS_URL が未設定です。Settings → Vars に Cloudflare Workers の URL を追加してください。"
       );
       return;
     }
@@ -248,7 +258,9 @@ export function BgmPlayer() {
   const showBuffering   = isBuffering && status === "playing";
   const showPlayIcon    = status !== "playing";
   const hasTrackInfo    = track !== null && (status === "playing" || status === "paused" || showBuffering);
-  const workersNotSet   = !WORKERS_BASE_URL;
+  // 再生を試みてエラーになった場合にのみ Workers URL 未設定の警告を出す
+  const workersNotSet   = !WORKERS_BASE_URL && status === "error" &&
+    (errorMsg?.includes("NEXT_PUBLIC_WORKERS_URL") ?? false);
 
   return (
     <div
