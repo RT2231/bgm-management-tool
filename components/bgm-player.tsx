@@ -15,13 +15,7 @@ import { TagSelector } from "@/components/tag-selector";
 import { VolumeControl } from "@/components/volume-control";
 import type { BgmTag, PlayerStatus, Track } from "@/types/bgm";
 
-// NEXT_PUBLIC_ 変数はビルド時に埋め込まれる。
-// v0 プレビュー / ローカル開発では空になりうるので実行時にも確認する。
-const WORKERS_BASE_URL =
-  (typeof process !== "undefined" && process.env.NEXT_PUBLIC_WORKERS_URL) ||
-  (typeof window !== "undefined" &&
-    (window as unknown as Record<string, string>).__NEXT_PUBLIC_WORKERS_URL__) ||
-  "";
+const WORKERS_BASE_URL = "https://bgm-management-tool.shirokuma0822.workers.dev";
 
 // プログレスバーをドラッグ中の最小更新間隔（ms）
 const SEEK_THROTTLE_MS = 50;
