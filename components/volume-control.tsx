@@ -4,20 +4,23 @@ import { Volume1Icon, Volume2Icon, VolumeXIcon } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 
 interface VolumeControlProps {
-  volume: number; // 0–1
+  volume: number;       // 0–1（ミュート時も実際の音量値を保持）
+  isMuted: boolean;
   onVolumeChange: (value: number) => void;
+  onMuteToggle: () => void;
 }
 
-export function VolumeControl({ volume, onVolumeChange }: VolumeControlProps) {
+export function VolumeControl({ volume, isMuted, onVolumeChange, onMuteToggle }: VolumeControlProps) {
+  const effectiveVolume = isMuted ? 0 : volume;
   const Icon =
-    volume === 0 ? VolumeXIcon : volume < 0.5 ? Volume1Icon : Volume2Icon;
+    effectiveVolume === 0 ? VolumeXIcon : effectiveVolume < 0.5 ? Volume1Icon : Volume2Icon;
 
   return (
     <div className="flex items-center gap-3">
       <button
         type="button"
-        aria-label={volume === 0 ? "ミュート解除" : "ミュート"}
-        onClick={() => onVolumeChange(volume === 0 ? 0.7 : 0)}
+        aria-label={isMuted ? "ミュート解除" : "ミュート"}
+        onClick={onMuteToggle}
         className="text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Icon className="size-4" />
@@ -26,13 +29,17 @@ export function VolumeControl({ volume, onVolumeChange }: VolumeControlProps) {
         min={0}
         max={1}
         step={0.01}
-        value={[volume]}
-        onValueChange={([v]) => onVolumeChange(v)}
+        value={[effectiveVolume]}
+        onValueChange={([v]) => {
+          // スライダー操作でミュート解除しつつ音量変更
+          if (isMuted && v > 0) onMuteToggle();
+          onVolumeChange(v);
+        }}
         aria-label="音量"
         className="w-24"
       />
       <span className="w-8 text-right font-mono text-xs text-muted-foreground">
-        {Math.round(volume * 100)}
+        {Math.round(effectiveVolume * 100)}
       </span>
     </div>
   );
