@@ -11,12 +11,12 @@ ALLOWED_ORIGIN = "*"
 [[d1_databases]]
 binding = "DB"
 database_name = "omacase-bgm-db"
-database_id = "YOUR_D1_DATABASE_ID" # `wrangler d1 create omacase-bgm-db` で取得したIDに置き換えてください
+database_id = "fe720da1-a81c-45d9-baef-02d09314b9d4" # `wrangler d1 create omacase-bgm-db` で取得したIDに置き換えてください
 
 # R2 バケットのバインディング
 [[r2_buckets]]
 binding = "BGM_BUCKET"
-bucket_name = "stream-bgm-bucket"
+bucket_name = "omakase-streambgm"
 
 # ローカル開発用の設定
 [dev]
