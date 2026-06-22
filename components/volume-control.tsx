@@ -29,11 +29,11 @@ export function VolumeControl({ volume, isMuted, onVolumeChange, onMuteToggle }:
         min={0}
         max={1}
         step={0.01}
-        value={[effectiveVolume]}
-        onValueChange={([v]) => {
-          // スライダー操作でミュート解除しつつ音量変更
-          if (isMuted && v > 0) onMuteToggle();
-          onVolumeChange(v);
+        value={effectiveVolume}
+        onValueChange={(v) => {
+          const next = Array.isArray(v) ? v[0] : v;
+          if (isMuted && next > 0) onMuteToggle();
+          onVolumeChange(next);
         }}
         aria-label="音量"
         className="w-24"
